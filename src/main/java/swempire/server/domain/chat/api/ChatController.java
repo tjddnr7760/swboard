@@ -19,11 +19,6 @@ public class ChatController {
         return "";
     }
 
-    @GetMapping("/{Board_index}")
-    public String getChatEditPage() {
-        return "";
-    }
-
     @PatchMapping("/{Board_index}")
     public String patchChat() {
         return "";
