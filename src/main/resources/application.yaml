@@ -4,6 +4,7 @@ spring:
     username: root
     password: 1234
     driverClassName: com.mysql.cj.jdbc.Driver
+
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
@@ -14,3 +15,10 @@ spring:
         format_sql: true
         jdbc:
           time_zone: Asia/Seoul
+
+thymeleaf:
+  cache: false
+  check-template-location: true
+  prefix: classpath:/templates/
+  suffix: .html
+  enabled: true
