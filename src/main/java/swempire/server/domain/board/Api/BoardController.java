@@ -14,9 +14,9 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @GetMapping("/{page}")
+    @GetMapping("/main/{page}")
     public String getMainPage() {
-        return "";
+        return "main.html";
     }
 
     @GetMapping
