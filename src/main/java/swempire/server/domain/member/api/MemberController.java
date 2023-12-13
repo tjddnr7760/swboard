@@ -3,10 +3,9 @@ package swempire.server.domain.member.api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import swempire.server.domain.member.application.MemberService;
+import swempire.server.domain.member.dto.SignUpDto;
 
 @Slf4j
 @RequestMapping("/member")
@@ -33,11 +32,12 @@ public class MemberController {
 
     @GetMapping
     public String getSignUpPage() {
-        return "";
+        return "signup.html";
     }
 
     @PostMapping
-    public String postSignup() {
-        return "";
+    public String postSignup(@ModelAttribute SignUpDto signUpDto) {
+        memberService
+        return "main.html";
     }
 }
