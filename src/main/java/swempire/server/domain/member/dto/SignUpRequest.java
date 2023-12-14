@@ -15,7 +15,8 @@ public class SignUpDto {
     private String name;
 
     public Member toMember() {
-        Member member = new Member();
-
+        return Member.builder()
+                .email("tjddnr7760@naver.com")
+                .build();
     }
 }
