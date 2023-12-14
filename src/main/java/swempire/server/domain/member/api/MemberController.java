@@ -3,9 +3,10 @@ package swempire.server.domain.member.api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import swempire.server.domain.member.application.MemberService;
-import swempire.server.domain.member.dto.SignUpDto;
+import swempire.server.domain.member.dto.SignUpRequest;
 
 @Slf4j
 @RequestMapping("/member")
@@ -36,8 +37,9 @@ public class MemberController {
     }
 
     @PostMapping
-    public String postSignup(@ModelAttribute SignUpDto signUpDto) {
-        memberService
-        return "main.html";
+    public String postSignup(@ModelAttribute SignUpRequest signUpRequest, Model model) {
+        boolean result = memberService.signUpMember(signUpRequest);
+        model.addAttribute("signupSuccess", result);
+        return "main";
     }
 }

@@ -1,9 +1,7 @@
 package swempire.server.domain.member.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,4 +18,15 @@ public class Member {
     private String password;
 
     private String name;
+
+    @Builder
+    public Member(String email, String password, String name) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+    }
+
+    public void encodeMemberPassword(String encodePassword) {
+        this.password = encodePassword;
+    }
 }

@@ -27,6 +27,14 @@
         </div>
     </div>
 
+    <script th:if="${signupSuccess}">
+        alert('회원가입이 완료되었습니다.');
+    </script>
+
+    <script th:unless="${signupSuccess}">
+        alert('회원가입이 실패하였습니다. 이미 사용중인 이메일이거나 잘못된 값이 입력되었습니다.');
+    </script>
+
     <hr class="my-4">
     <div>
         <table class="table">

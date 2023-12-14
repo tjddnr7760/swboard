@@ -4,19 +4,27 @@ import lombok.Builder;
 import lombok.Getter;
 import swempire.server.domain.member.domain.Member;
 
-@Builder
 @Getter
-public class SignUpDto {
+public class SignUpRequest {
 
-    private String email;
+    private final String email;
 
-    private String password;
+    private final String password;
 
-    private String name;
+    private final String name;
+
+    @Builder
+    public SignUpRequest(String email, String password, String name) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+    }
 
     public Member toMember() {
         return Member.builder()
-                .email("tjddnr7760@naver.com")
+                .email(this.email)
+                .password(this.password)
+                .name(this.name)
                 .build();
     }
 }
