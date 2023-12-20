@@ -18,12 +18,8 @@ public class MemberController {
 
     @GetMapping("/login")
     public String getLoginPage() {
-        return "";
-    }
-
-    @PostMapping("/login")
-    public String authLogin() {
-        return "";
+        log.info("login is called");
+        return "login2";
     }
 
     @PostMapping("/logout")
@@ -33,7 +29,7 @@ public class MemberController {
 
     @GetMapping
     public String getSignUpPage() {
-        return "signup.html";
+        return "signup";
     }
 
     @PostMapping
