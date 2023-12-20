@@ -1,8 +1,9 @@
 <!DOCTYPE HTML>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+    <link th:href="@{/css/bootstrap.min.css}"
+          href="../static/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .container {
         max-width: 560px;
@@ -14,14 +15,14 @@
     <div class="py-5 text-center">
         <h2>SW BOARD 로그인</h2>
     </div>
-    <form action="item.html" method="post">
+    <form action="/auth/login" method="post">
         <div>
-            <label for="itemName">ID</label>
-            <input type="text" id="itemName" name="itemName" class="form-control" placeholder="아이디를 입력하세요">
+            <label for="email">ID</label>
+            <input type="text" id="email" name="email" class="form-control" placeholder="이메일을 입력하세요">
         </div>
         <div>
-            <label for="price">PW</label>
-            <input type="text" id="price" name="price" class="form-control" placeholder="비밀번호를 입력하세요">
+            <label for="password">PW</label>
+            <input type="text" id="password" name="password" class="form-control" placeholder="비밀번호를 입력하세요">
         </div>
         <hr class="my-4">
         <div class="row">

@@ -22,3 +22,8 @@ thymeleaf:
   prefix: classpath:/templates/
   suffix: .html
   enabled: true
+
+jwt:
+  key: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  access-token-expiration-minutes: 1444
+  refresh-token-expiration-minutes: 1444
