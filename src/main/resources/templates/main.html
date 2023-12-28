@@ -44,23 +44,21 @@
         <table class="table">
             <thead>
             <tr>
-                <th>ID</th>
                 <th>제목</th>
                 <th>작성자</th>
-                <th>조회수</th>
                 <th>등록일</th>
 
             </tr>
             </thead>
             <tbody>
             <tr th:each="board : ${boards}">
-                <td><a href="item.html">글 ID</a>
+                <td>
+                    <a th:href="@{'/board/' + ${board.id}}">
+                        <span th:text="${board.title}">제목</span>
+                    </a>
                 </td>
-                <td><a href="item.html">제목</a>
-                </td>
-                <td>작성자</td>
-                <td>조회수</td>
-                <td>등록일</td>
+                <td th:text="${board.name}">작성자</td>
+                <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm')}">등록일</td>
             </tr>
             </tbody>
         </table>
