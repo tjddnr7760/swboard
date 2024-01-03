@@ -10,6 +10,8 @@ import swempire.server.domain.board.application.BoardService;
 import swempire.server.domain.board.dto.BoardBodyResponse;
 import swempire.server.domain.board.dto.BoardResponse;
 import swempire.server.domain.board.dto.PostBoardRequest;
+import swempire.server.domain.chat.application.ChatService;
+import swempire.server.domain.chat.dto.ChatResponse;
 import swempire.server.global.auth.memberDetails.MemberContextInform;
 
 import java.util.HashMap;
@@ -23,6 +25,7 @@ import java.util.Map;
 public class BoardController {
 
     private final BoardService boardService;
+    private final ChatService chatService;
 
     @GetMapping("/main/{page}")
     public String getMainPage(Model model, Authentication authentication) {
@@ -67,7 +70,7 @@ public class BoardController {
     }
 
     @GetMapping("/{Board_index}")
-    public String getBoardSpecificPage(@PathVariable Long Board_index, Model model) {
+    public String getBoardSpecificPage(@PathVariable Long Board_index, Model model, Authentication authentication) {
         BoardBodyResponse boardBodyResponse = boardService.getSpecificBoard(Board_index);
         model.addAttribute("boardId", boardBodyResponse.getId());
         model.addAttribute("boardTitle", boardBodyResponse.getTitle());
@@ -75,6 +78,16 @@ public class BoardController {
         model.addAttribute("boardCreatedAt", boardBodyResponse.getCreatedAt());
         model.addAttribute("boardBody", boardBodyResponse.getBody());
 
+        List<ChatResponse> chatResponses = chatService.getAllChatsInOneBoard(Board_index);
+        model.addAttribute("comments", chatResponses);
+
+        try {
+            String name = getName(authentication);
+            model.addAttribute("currentUsername", name);
+            log.info("{}", name);
+        } catch (Exception e) {
+            log.info("This chat is not yours");
+        }
         return "boardResponse";
     }
 
@@ -113,5 +126,16 @@ public class BoardController {
             email = memberInform.getEmail();
         }
         return email;
+    }
+
+    private String getName(Authentication authentication) {
+        String name;
+        if (authentication == null) {
+            throw new IllegalStateException();
+        } else {
+            MemberContextInform memberInform = (MemberContextInform) authentication.getPrincipal();
+            name = memberInform.getName();
+        }
+        return name;
     }
 }
