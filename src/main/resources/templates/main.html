@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/bootstrap.min.css}" href="../static/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 
@@ -53,7 +53,8 @@
             <tbody>
             <tr th:each="board : ${boards}">
                 <td>
-                    <a th:href="@{'/board/' + ${board.id}}">
+                    <a th:href="@{'/board/' + ${board.id}}"
+                       th:onclick="|redirectToBoard(event, ${board.id})|">
                         <span th:text="${board.title}">제목</span>
                     </a>
                 </td>
@@ -105,6 +106,30 @@
             alert("로그아웃 되었습니다.");
             location.reload();
         }
+
+        function redirectToBoard(event, boardId) {
+            event.preventDefault();
+
+            var accessToken = localStorage.getItem("accessToken");
+            console.log(accessToken);
+
+            var headers = new Headers({
+                "Authorization": "Bearer " + accessToken
+            });
+
+            fetch("/board/" + boardId, {
+                method: "GET",
+                headers: headers
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.write(html);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        }
+
     </script>
 </div> <!-- /container -->
 
