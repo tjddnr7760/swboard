@@ -26,34 +26,55 @@ public class ChatService {
     public void saveChat(Long boardIndex, String body, String email, Long parentChatId) {
         Optional<Board> optionalBoard = chatRepository.findByBoardId(boardIndex);
         Optional<Member> optionalMember = chatRepository.findMemberByEmail(email);
-        Optional<Chat> lastChatById = chatRepository.getLastChatById(parentChatId);
+        Optional<Chat> optionalChat = chatRepository.getLastChatById(parentChatId);
+        Long chatNumber = chatRepository.findChatCountByBoardId(boardIndex);
 
-        if (parentChatId == 0 && (optionalBoard.isPresent() && optionalMember.isPresent())) {
-            if (lastChatById.isEmpty()) {
+        if (parentChatId == 0L && (optionalBoard.isPresent() && optionalMember.isPresent())) {
+            log.info("ParentChat Id is zero, default chat");
+            if (chatNumber == 0L) {
+                log.info("First chat in BoardId {}", boardIndex);
                 chatRepository.save(
                         Chat.initOf(
                                 body,
                                 optionalBoard.get(),
                                 optionalMember.get())
                 );
-            } else {
+            } else if (optionalChat.isPresent()) {
+                log.info("Default Depth Chat in BoardId {}", boardIndex);
+                Chat chat = optionalChat.get();
+                log.info("search chat parentChatId : {}, sequence: {}", chat.getId(), chat.getSequence());
                 chatRepository.save(
-                        Chat.parentChatIdZero(
-                                lastChatById.get(),
+                        Chat.parentChatIdZeroOf(
+                                chat,
                                 body,
                                 optionalBoard.get(),
                                 optionalMember.get())
                 );
             }
-        } else if (parentChatId >= 1 && (optionalBoard.isPresent() && optionalMember.isPresent()) && lastChatById.isPresent()) {
-            chatRepository.save(
-                    Chat.defaultOf(
-                            lastChatById.get(),
-                            body,
-                            parentChatId,
-                            optionalBoard.get(),
-                            optionalMember.get())
-            );
+        } else if (parentChatId >= 1L && (optionalBoard.isPresent() && optionalMember.isPresent())) {
+            if (optionalChat.isPresent()) {
+                log.info("Reply chat, parentChatId {}", parentChatId);
+                Chat chat = optionalChat.get();
+                log.info("search chat parentChatId : {}, sequence: {}", chat.getId(), chat.getSequence());
+                chatRepository.save(
+                        Chat.defaultOf(
+                                chat,
+                                body,
+                                parentChatId,
+                                optionalBoard.get(),
+                                optionalMember.get())
+                );
+            } else {
+                log.info("First reply chat, parentChatId : {}", parentChatId);
+                chatRepository.save(
+                        Chat.initReplyOf(
+                                parentChatId,
+                                body,
+                                optionalBoard.get(),
+                                optionalMember.get()
+                        )
+                );
+            }
         } else {
             throw new IllegalStateException("Invalid Chat Situation");
         }

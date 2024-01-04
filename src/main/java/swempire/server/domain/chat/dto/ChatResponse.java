@@ -12,8 +12,6 @@ public class ChatResponse {
 
     private final String body;
 
-    private final int section;
-
     private final Long parentChatId;
 
     private final int sequence;
@@ -23,10 +21,9 @@ public class ChatResponse {
     private final LocalDateTime createdAt;
 
     @Builder
-    public ChatResponse(Long id, String body, int section, Long parentChatId, int sequence, String name, LocalDateTime createdAt) {
+    public ChatResponse(Long id, String body, Long parentChatId, int sequence, String name, LocalDateTime createdAt) {
         this.id = id;
         this.body = body;
-        this.section = section;
         this.parentChatId = parentChatId;
         this.sequence = sequence;
         this.name = name;

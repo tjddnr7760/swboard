@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import swempire.server.domain.chat.application.ChatService;
 import swempire.server.domain.chat.dto.ChatRequest;
@@ -21,12 +20,11 @@ public class ChatController {
     @PostMapping("/{Board_index}")
     public String postChat(@PathVariable("Board_index") Long boardIndex,
                            @RequestBody ChatRequest chatRequest,
-                           Authentication authentication,
-                           Model model) {
+                           Authentication authentication) {
         log.info("chat body : {}", chatRequest.getBody());
         chatService.saveChat(boardIndex, chatRequest.getBody(),
                 getEmail(authentication), chatRequest.getParentChatId());
-        return "";
+        return "boardResponse";
     }
 
     @PatchMapping("/{commentId}")

@@ -21,8 +21,6 @@ public class Chat extends TimeTracker {
 
     private String body;
 
-    private int section;
-
     private Long parentChatId;
 
     private int sequence;
@@ -36,9 +34,8 @@ public class Chat extends TimeTracker {
     Member member;
 
     @Builder
-    public Chat(String body, int section, Long parentChatId, int sequence, Board board, Member member) {
+    public Chat(String body, Long parentChatId, int sequence, Board board, Member member) {
         this.body = body;
-        this.section = section;
         this.parentChatId = parentChatId;
         this.sequence = sequence;
         this.board = board;
@@ -48,7 +45,6 @@ public class Chat extends TimeTracker {
     public static Chat defaultOf(Chat chat, String body, Long parentChatId, Board board, Member member) {
         return Chat.builder()
                 .body(body)
-                .section(chat.getSection() + 1)
                 .parentChatId(parentChatId)
                 .sequence(chat.getSequence() + 1)
                 .board(board)
@@ -59,18 +55,26 @@ public class Chat extends TimeTracker {
     public static Chat initOf(String body, Board board, Member member) {
         return Chat.builder()
                 .body(body)
-                .section(0)
                 .parentChatId(0L)
-                .sequence(1)
+                .sequence(0)
                 .board(board)
                 .member(member)
                 .build();
     }
 
-    public static Chat parentChatIdZero(Chat chat, String body, Board board, Member member) {
+    public static Chat initReplyOf(Long parentChatId, String body, Board board, Member member) {
         return Chat.builder()
                 .body(body)
-                .section(chat.getSection() + 1)
+                .parentChatId(parentChatId)
+                .sequence(0)
+                .board(board)
+                .member(member)
+                .build();
+    }
+
+    public static Chat parentChatIdZeroOf(Chat chat, String body, Board board, Member member) {
+        return Chat.builder()
+                .body(body)
                 .parentChatId(0L)
                 .sequence(chat.getSequence() + 1)
                 .board(board)
