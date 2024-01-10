@@ -27,14 +27,19 @@
                     type="button">글 등록
             </button>
             <button class="btn btn-primary float-end"
-                    onclick="location.href='signup.html'"
-                    th:onclick="|location.href='@{/member}'|"
-                    type="button">회원가입
+                    onclick="location.href='stonepass/2Factor.html'"
+                    th:onclick="|location.href='@{/stonepass/2Factor}'|"
+                    type="button">2차인증
             </button>
             <button class="btn btn-primary float-end"
                     onclick="location.href='login2.html'"
                     th:onclick="|location.href='@{/member/login}'|"
                     type="button">로그인
+            </button>
+            <button class="btn btn-primary float-end"
+                    onclick="location.href='signup.html'"
+                    th:onclick="|location.href='@{/member}'|"
+                    type="button">회원가입
             </button>
         </div>
     </div>
@@ -81,30 +86,49 @@
                     method: "GET",
                     headers: headers
                 })
-                .then(response => response.text())
-                .then(html => {
+                    .then(response => response.text())
+                    .then(html => {
                     document.body.innerHTML = html;
                 })
-                .catch(error => {
+                    .catch(error => {
                     console.error(error);
                 });
             } else {
                 fetch("/board/main/1")
-                .then(response => response.text())
-                .then(html => {
+                    .then(response => response.text())
+                    .then(html => {
                     document.body.innerHTML = html;
                 })
-                .catch(error => {
+                    .catch(error => {
                     console.error(error);
                 });
             }
         }
 
         function logoutAndRedirect() {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            alert("로그아웃 되었습니다.");
-            location.reload();
+            var accessToken = localStorage.getItem("accessToken");
+
+            var headers = new Headers({
+                "Authorization": "Bearer " + accessToken
+            });
+
+            fetch("/member/logout", {
+                method: "POST",
+                headers : headers
+            })
+                .then(response => {
+                if (response.ok) {
+                    localStorage.removeItem("accessToken");
+                    localStorage.removeItem("refreshToken");
+                    alert("로그아웃 되었습니다.");
+                    location.reload();
+                } else {
+                    console.error("로그아웃 요청 실패");
+                }
+            })
+                .catch(error => {
+                console.error("로그아웃 중 오류", error);
+            });
         }
 
         function redirectToBoard(event, boardId) {
@@ -121,11 +145,11 @@
                 method: "GET",
                 headers: headers
             })
-            .then(response => response.text())
-            .then(html => {
+                .then(response => response.text())
+                .then(html => {
                 document.write(html);
             })
-            .catch(error => {
+                .catch(error => {
                 console.error(error);
             });
         }
