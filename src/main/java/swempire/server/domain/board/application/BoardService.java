@@ -3,6 +3,7 @@ package swempire.server.domain.board.application;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import swempire.server.domain.board.dao.BoardRepository;
 import swempire.server.domain.board.domain.Board;
 import swempire.server.domain.board.dto.BoardBodyResponse;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class BoardService {
 
@@ -25,9 +27,14 @@ public class BoardService {
         Member memberByEmail = boardRepository.findMemberByEmail(email);
         log.info("find member is : {}", memberByEmail.getEmail());
 
-        boardRepository.save(Board.of(title, body, memberByEmail));
+        if (memberByEmail.getTwoFactor()) {
+            boardRepository.save(Board.of(title, body, memberByEmail));
+        } else {
+            throw new IllegalStateException("need two Factor Process");
+        }
     }
 
+    @Transactional(readOnly = true)
     public List<BoardResponse> getAllBoards() {
         List<Board> boards = boardRepository.findAllWithMember();
 
@@ -36,6 +43,7 @@ public class BoardService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public BoardBodyResponse getSpecificBoard(Long boardId) {
         Optional<Board> optionalBoard = boardRepository.findById(boardId);
         BoardBodyResponse boardBodyResponse;
