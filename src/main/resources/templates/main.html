@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/bootstrap.min.css}" href="../static/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 
@@ -27,14 +27,19 @@
                     type="button">글 등록
             </button>
             <button class="btn btn-primary float-end"
-                    onclick="location.href='signup.html'"
-                    th:onclick="|location.href='@{/member}'|"
-                    type="button">회원가입
+                    onclick="location.href='stonepass/2Factor.html'"
+                    th:onclick="|location.href='@{/stonepass/2Factor}'|"
+                    type="button">2차인증
             </button>
             <button class="btn btn-primary float-end"
                     onclick="location.href='login2.html'"
                     th:onclick="|location.href='@{/member/login}'|"
                     type="button">로그인
+            </button>
+            <button class="btn btn-primary float-end"
+                    onclick="location.href='signup.html'"
+                    th:onclick="|location.href='@{/member}'|"
+                    type="button">회원가입
             </button>
         </div>
     </div>
@@ -44,23 +49,22 @@
         <table class="table">
             <thead>
             <tr>
-                <th>ID</th>
                 <th>제목</th>
                 <th>작성자</th>
-                <th>조회수</th>
                 <th>등록일</th>
 
             </tr>
             </thead>
             <tbody>
             <tr th:each="board : ${boards}">
-                <td><a href="item.html">글 ID</a>
+                <td>
+                    <a th:href="@{'/board/' + ${board.id}}"
+                       th:onclick="|redirectToBoard(event, ${board.id})|">
+                        <span th:text="${board.title}">제목</span>
+                    </a>
                 </td>
-                <td><a href="item.html">제목</a>
-                </td>
-                <td>작성자</td>
-                <td>조회수</td>
-                <td>등록일</td>
+                <td th:text="${board.name}">작성자</td>
+                <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm')}">등록일</td>
             </tr>
             </tbody>
         </table>
@@ -82,31 +86,74 @@
                     method: "GET",
                     headers: headers
                 })
-                .then(response => response.text())
-                .then(html => {
+                    .then(response => response.text())
+                    .then(html => {
                     document.body.innerHTML = html;
                 })
-                .catch(error => {
+                    .catch(error => {
                     console.error(error);
                 });
             } else {
                 fetch("/board/main/1")
-                .then(response => response.text())
-                .then(html => {
+                    .then(response => response.text())
+                    .then(html => {
                     document.body.innerHTML = html;
                 })
-                .catch(error => {
+                    .catch(error => {
                     console.error(error);
                 });
             }
         }
 
         function logoutAndRedirect() {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            alert("로그아웃 되었습니다.");
-            location.reload();
+            var accessToken = localStorage.getItem("accessToken");
+
+            var headers = new Headers({
+                "Authorization": "Bearer " + accessToken
+            });
+
+            fetch("/member/logout", {
+                method: "POST",
+                headers : headers
+            })
+                .then(response => {
+                if (response.ok) {
+                    localStorage.removeItem("accessToken");
+                    localStorage.removeItem("refreshToken");
+                    alert("로그아웃 되었습니다.");
+                    location.reload();
+                } else {
+                    console.error("로그아웃 요청 실패");
+                }
+            })
+                .catch(error => {
+                console.error("로그아웃 중 오류", error);
+            });
         }
+
+        function redirectToBoard(event, boardId) {
+            event.preventDefault();
+
+            var accessToken = localStorage.getItem("accessToken");
+            console.log(accessToken);
+
+            var headers = new Headers({
+                "Authorization": "Bearer " + accessToken
+            });
+
+            fetch("/board/" + boardId, {
+                method: "GET",
+                headers: headers
+            })
+                .then(response => response.text())
+                .then(html => {
+                document.write(html);
+            })
+                .catch(error => {
+                console.error(error);
+            });
+        }
+
     </script>
 </div> <!-- /container -->
 

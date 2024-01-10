@@ -1,0 +1,65 @@
+<!-- comment-template.html -->
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comment Template</title>
+</head>
+<body>
+
+<!-- 타임리프에서 재귀 호출을 지원하기 위해 태그를 적절히 사용하여 템플릿을 정의합니다. -->
+<th:block th:fragment="comment-template (comments, comment, currentUsername)">
+    <th:block th:each="reply : ${comments}" th:if="${reply.parentChatId eq comment.id}">
+        <div class="comment" th:data-comment-id="${reply.id}" style="margin-left: 20px;">
+            <p class="comment-body" th:text="${reply.body}"></p>
+            <p class="comment-author">작성자: <span th:text="${reply.name}" style="color: #007bff;"></span></p>
+            <p class="comment-created-at">생성 시간: <span
+                    th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm')}"
+                    style="color: #888;"></span></p>
+
+            <!-- 로그인한 사용자와 댓글 작성자가 동일한 경우에만 수정, 삭제 버튼 표시 -->
+            <div class="comment-buttons" th:if="${currentUsername eq reply.name}">
+                <button id="editButton2" th:onclick="'editComment(\'' + ${reply.id} + '\')'"
+                        style="border: 1px solid #ccc;">수정
+                </button>
+                <button id="deleteChatButton2" th:onclick="'deleteComment(\'' + ${reply.id} + '\')'"
+                        style="border: 1px solid #ccc;">삭제
+                </button>
+            </div>
+
+            <!-- 수정 칸 및 수정 완료 버튼 -->
+            <div class="edit-comment-container" th:id="'editCommentContainer_' + ${reply.id}"
+                 style="display: none; margin-top: 20px;">
+                <textarea class="edit-comment-text" th:id="'editCommentText_' + ${reply.id}"
+                          placeholder="댓글을 수정하세요"></textarea>
+                <button class="submitEditButton" th:onclick="'submitEditComment(\'' + ${reply.id} + '\')'"
+                        style="margin-top: 10px; border: 1px solid #ccc;">수정 완료
+                </button>
+            </div>
+
+            <!-- 대댓글 버튼 -->
+            <button class="reply-comment-button" th:onclick="'toggleReplyForm(\'' + ${reply.id} + '\')'"
+                    style="float: right; margin-left: 10px; margin-top: -28px; border: 1px solid #ccc;">대댓글
+            </button>
+
+            <!-- 대댓글 폼 -->
+            <div class="reply-form-container" th:id="'replyFormContainer_' + ${reply.id}"
+                 style="display: none; text-align: center; margin: 10px 0;">
+                <div style="max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;">
+                    <textarea class="reply-comment-text" th:id="'replyCommentText_' + ${reply.id}"
+                              style="flex: 1; margin-right: 5px; box-sizing: border-box;"
+                              placeholder="대댓글을 입력하세요"></textarea>
+                    <button class="submitReplyButton" th:onclick="'submitReply(\'' + ${reply.id} + '\')'"
+                            style="width: auto; border: 1px solid #ccc;">등록
+                    </button>
+                </div>
+            </div>
+            <!-- 재귀 호출 -->
+            <div th:replace="comment-template :: comment-template (comments=${comments}, comment=${reply}, currentUsername=${currentUsername})"></div>
+        </div>
+    </th:block>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stone Pass 2차 인증 페이지</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0; /* 바깥 배경 회색 */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #container {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #ffffff; /* 흰색 배경 */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #1e3799; /* 진한 남색 텍스트 */
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #1e3799; /* 진한 남색 버튼 배경색 */
+            color: #ffffff; /* 버튼 텍스트 색상 */
+            border: none;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #0c2461; /* 마우스 오버시 어둡게 변경 */
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <h2>Stone Pass<br>2차 인증 페이지</h2>
+    <button class="btn btn-primary float-end" onclick="startAuthentication()" type="button">인증 시작</button>
+    <button class="btn btn-primary float-end" onclick="completeAuthentication()" type="button">인증 완료</button>
+</div>
+<script>
+    function startAuthentication() {
+        var accessToken = localStorage.getItem("accessToken");
+
+        var headers = new Headers();
+        headers.append("Authorization", "Bearer " + accessToken);
+        headers.append("Content-Type", "application/json");
+
+        fetch("/stonepass/2Factor", {
+            method: "POST",
+            headers: headers
+        })
+            .then(data => {
+            if (data) {
+                const twoFactorToken = data.headers.get("twoFactorToken");
+                localStorage.setItem("twoFactorToken", twoFactorToken);
+            } else {
+                console.log("인증 시작 실패");
+            }
+        })
+            .catch(error => {
+            console.error("인증 시작 중 오류", error);
+        });
+    }
+
+    function completeAuthentication() {
+        var accessToken = localStorage.getItem("accessToken");
+        var twoFactorToken = localStorage.getItem("twoFactorToken");
+
+        var headers = new Headers();
+        headers.append("Authorization", "Bearer " + accessToken);
+        headers.append("twoFactorToken", twoFactorToken);
+        headers.append("Content-Type", "application/json");
+
+        fetch("/stonepass/2FactorComplete", {
+            method: "POST",
+            headers: headers
+        })
+            .then(data => {
+            if (data) {
+                const redirectPage = data.headers.get("redirectPage");
+                if (redirectPage === "mobileOTP") {
+                    window.location.href = "mobileOTP";
+                }
+                console.log("인증 완료 성공");
+                if (redirectPage !== "mobileOTP") {
+                    window.location.href = "/board/main/1";
+                    localStorage.removeItem("twoFactorToken");
+                }
+            } else {
+                console.log("인증 완료 실패");
+                localStorage.removeItem("twoFactorToken");
+            }
+        })
+            .catch(error => {
+            console.error("인증 완료 중 오류", error);
+            localStorage.removeItem("twoFactorToken");
+        });
+    }
+</script>
+</body>
+</html>
