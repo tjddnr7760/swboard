@@ -41,6 +41,7 @@ public class ChatController {
     public String deleteChat(@PathVariable("commentId") Long commentId, Authentication authentication) {
         chatService.deleteChat(commentId, getEmail(authentication));
         log.info("Delete success");
+
         return "boardResponse";
     }
 

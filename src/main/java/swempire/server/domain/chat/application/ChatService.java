@@ -3,6 +3,7 @@ package swempire.server.domain.chat.application;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import swempire.server.domain.board.domain.Board;
 import swempire.server.domain.chat.dao.ChatRepository;
 import swempire.server.domain.chat.domain.Chat;
@@ -14,11 +15,13 @@ import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class ChatService {
 
     private final ChatRepository chatRepository;
 
+    @Transactional(readOnly = true)
     public List<ChatResponse> getAllChatsInOneBoard(Long boardIndex) {
         return chatRepository.getAllChatsByBoardIndex(boardIndex);
     }
